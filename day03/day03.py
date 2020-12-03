@@ -1,13 +1,17 @@
 from functools import reduce
 from operator import mul
+import regex as re
 
 def calc_n_trees(slope, grid):
-    return len ([r for n_steps, r in zip(range(1, len(grid)), range(slope[1], len(grid), slope[1])) if grid[r][n_steps * slope[0] % len(grid[r])] == '#'])
+    dc, dr = slope
+    return len([r for r in range(1, len(grid) // dx) if grid[r * dx][r * dy % len(grid[r])] == '#'])
 
+def solve_part_1(grid):
     return calc_n_trees((3, 1), grid)
 
 def solve_part_2(grid):
-    return reduce(mul, [calc_n_trees(s, grid) for s in [(1, 1), (3, 1), (5, 1), (7, 1), (1, 2)]])
+    slopes = [(1, 1), (3, 1), (5, 1), (7, 1), (1, 2)]
+    return reduce(mul, [calc_n_trees(s, grid) for s in slopes])
 
 def main():
     with open('input.txt') as f:
