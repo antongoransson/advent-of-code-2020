@@ -1,11 +1,11 @@
 from functools import reduce
 
 def solve_part_1(answers):
-    return sum([len(set([c for  c in ''.join(a)])) for a in answers])
+    return sum([len(set(''.join(a))) for a in answers])
 
 
 def solve_part_2(answers):
-    return sum([len(reduce(set.intersection, [set([c for c in x]) for x in a])) for a in answers])
+    return sum([len(reduce(set.intersection, [set(c) for c in a])) for a in answers])
 
 
 def main():
