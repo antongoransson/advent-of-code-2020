@@ -1,5 +1,6 @@
 from collections import defaultdict
 from itertools import combinations
+import regex as re
 
 def find_number(numbers):
     n = 25

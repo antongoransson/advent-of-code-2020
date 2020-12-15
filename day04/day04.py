@@ -31,7 +31,7 @@ def main():
     with open('input.txt') as f:
         for line in f.read().split('\n\n'):
             a = line.replace('\n', ' ')
-            passports.append({k.split(':')[0] : k.split(':')[1] for k in pairs })
+            passports.append({k.split(':')[0] : k.split(':')[1] for k in a.split(' ') })
     sol1 = solve_part_1(passports)
     print('Part 1: {}'.format(sol1))
     

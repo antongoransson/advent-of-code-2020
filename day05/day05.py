@@ -18,7 +18,6 @@ def solve_part_2(seats):
 def main():
     with open('input.txt') as f:
         seats = [line.strip() for line in f.readlines()]
-        print(seats)
     sol1 = solve_part_1(seats)
     print('Part 1: {}'.format(sol1))
     

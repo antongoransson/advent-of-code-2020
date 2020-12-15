@@ -1,5 +1,5 @@
 from collections import defaultdict, Counter
-
+import regex as re
 
 def solve_part_1(adapters):
     diffs = Counter([adapters[i + 1] - adapters[i] for i in range(len(adapters)- 1)])

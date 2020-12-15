@@ -4,7 +4,7 @@ import regex as re
 
 def calc_n_trees(slope, grid):
     dc, dr = slope
-    return len([r for r in range(1, len(grid) // dx) if grid[r * dx][r * dy % len(grid[r])] == '#'])
+    return len([r for r in range(1, len(grid) // dr) if grid[r * dr][r * dc % len(grid[r])] == '#'])
 
 def solve_part_1(grid):
     return calc_n_trees((3, 1), grid)
