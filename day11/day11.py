@@ -1,73 +1,70 @@
 from itertools import product
+from collections import defaultdict
 
-FREE = 'L'
-FLOOR = '.'
-OCCUPIED = '#'
+def get_neighbours(seats, row_l, col_l, p2):
+    all_neighbours = {}
+    for pos in seats:
+        r, c = pos 
+        neighbours = set()
+        for dr, dc in product([-1, 0, 1], repeat = 2):
+            if dr == 0 and dc == 0:
+                continue
+            n_r = r + dr
+            n_c = c + dc
+            new_pos = (n_r, n_c)
+            while p2 and n_r in range(row_l) and n_c in range(col_l) and new_pos not in seats:
+                n_r += dr
+                n_c += dc
+                new_pos = (n_r, n_c)
+            if new_pos in seats:
+                neighbours.add(new_pos)
+        all_neighbours[pos] = neighbours
+    return all_neighbours
 
-def get_neighbours(grid, p2 = False):
-    n = {}
-    r_l = len(grid)
-    c_l = len(grid[0])
-    for r in range(len(grid)):
-        for c in range(len(grid[r])):
-            n[r, c] = []
-            for dr, dc in product([-1, 0, 1], repeat = 2):
-                if dr == 0 and dc == 0:
-                    continue
-                n_r = r + dr
-                n_c = c + dc
-                while n_r in range(r_l) and n_c in range(c_l) and grid[n_r][n_c] == FLOOR and p2:
-                    n_r += dr
-                    n_c += dc
-                if n_r in range(r_l) and n_c in range(c_l):
-                    n[r, c].append((n_r, n_c))
-    return n
+def next_state(pos, seats, n_occupied, p2 = False):
+    if seats[pos] == 'L' and n_occupied == 0:
+        return '#'
+    elif seats[pos] == '#' and n_occupied >= (4 + p2):
+        return 'L'
+    return seats[pos]
 
-def get_next_state(pos, seats, neighbours, p2 = False):
-    n_occupied = 0
-    n_occupied = len([1 for r, c in neighbours[pos] if seats[r][c] == OCCUPIED])
-    r, c = pos
-    if seats[r][c] == FREE and n_occupied == 0:
-        return OCCUPIED
-    elif seats[r][c] == OCCUPIED and n_occupied >= (4 + p2):
-        return FREE
-    return seats[r][c]
-
-def solve_part_1(seats):
-    neighbours = get_neighbours(seats)
-    next_seats = []
+def solve_problem(seats, row_l = None, col_l = None, p2 = False):
+    neighbours = get_neighbours(seats, row_l, col_l, p2)
     while True:
-        n = 0
-        for r, row in enumerate(seats):
-            next_seats.append([get_next_state((r, c), seats, neighbours) for c in range(len(row))])
-            n += len([1 for old_seat, new_seat in zip(row, next_seats[-1]) if old_seat != new_seat])
+        n_occupied = defaultdict(int)
+        changed = False
+        next_seats = {}
+        for pos in seats:
+            for n in neighbours[pos]:
+                if seats[n] == '#':
+                    n_occupied[pos] += 1
+            next_seats[pos] = next_state(pos, seats, n_occupied[pos], p2)
+            if seats[pos] != next_seats[pos]:
+                changed = True
         seats = next_seats
-        if n == 0:
-            return sum([c == OCCUPIED for row in seats for c in row])
-        next_seats = []
+        if not changed:
+            return(sum([seat == '#' for seat in seats.values()]))
 
-def solve_part_2(seats):
-    neighbours = get_neighbours(seats, True)
-    next_seats = []
-    while True:
-        n = 0
-        for r, row in enumerate(seats):
-            next_seats.append([get_next_state((r, c), seats, neighbours, True) for c in range(len(row))])
-            n += len([1 for old_seat, new_seat in zip(row, next_seats[-1]) if old_seat != new_seat])
-        seats = next_seats
-        if n == 0:
-            return sum([c == OCCUPIED for row in seats for c in row])
-        next_seats = []
+def solve_part_1(seats, row_l, col_l):
+    return solve_problem(seats)
 
+def solve_part_2(seats, row_l, col_l):
+    return solve_problem(seats, row_l, col_l, True)
 
 def main():
-    seats = []
+    seats = {}
+    row_l, col_l = 0, 0
     with open('input.txt') as f:
-        seats = [[c for c in line if c.strip()] for line in f]
-    sol1 = solve_part_1(seats)
+        for r, line in enumerate(f):
+            row_l += 1
+            col_l = len(line.strip())
+            for c, p in enumerate(line):
+                if p == 'L':
+                    seats[r, c] = p
+    sol1 = solve_part_1(seats, row_l, col_l)
     print('Part 1: {}'.format(sol1))
     
-    sol2 = solve_part_2(seats)
+    sol2 = solve_part_2(seats, row_l, col_l)
     print('Part 2: {}'.format(sol2))
 
 
