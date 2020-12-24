@@ -1,4 +1,5 @@
 from collections import defaultdict, Counter
+import regex as re
 
 d = {
     'e' : (1, -1, 0),
@@ -10,14 +11,8 @@ d = {
 }
 
 def get_black_tiles(tiles):
-    flipped_tiles = defaultdict(lambda: False)
-    for tile in tiles:
-        x, y, z = 0, 0 ,0
-        for c in tile:
-            dx, dy, dz = d[c] 
-            x, y, z = dx + x, dy + y, dz + z
-        flipped_tiles[(x, y, z)] = not(flipped_tiles[(x, y, z)])
-    return set(p for p, v in flipped_tiles.items() if v)
+    flipped_tiles = Counter(tuple(map(sum, zip(*[d[c] for c in t]))) for t in tiles)
+    return set(p for p, v in flipped_tiles.items() if v % 2 == 1)
 
 def get_neighbours(pos):
     x, y, z = pos
@@ -27,8 +22,6 @@ def get_neighbours(pos):
 def solve_part_1(tiles):
     return len(get_black_tiles(tiles))
 
-
-
 def solve_part_2(tiles):
     ts = get_black_tiles(tiles)
     for _ in range(100):
@@ -37,19 +30,8 @@ def solve_part_2(tiles):
     return len(ts)
 
 def main():
-    tiles = []
     with open('input.txt') as f:
-        for j, line in enumerate(f):
-            line = line.strip()
-            i = 0
-            tiles.append([])
-            while i < len(line):
-                if line[i] in ['w', 'e']:
-                    tiles[j].append(line[i])
-                    i += 1
-                else:
-                    tiles[j].append(line[i] + line[i + 1])
-                    i += 2
+        tiles = [re.findall(r'e|w|sw|se|nw|ne', line) for line in f]
     sol1 = solve_part_1(tiles)
     print('Part 1: {}'.format(sol1))
     
