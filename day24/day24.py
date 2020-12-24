@@ -23,6 +23,7 @@ def get_neighbours(pos):
     x, y, z = pos
     return [(x + dx, y + dy, z + dz) for dx, dy, dz in d.values()]
 
+# See https://stackoverflow.com/questions/1838656/how-do-i-represent-a-hextile-hex-grid-in-memory/16874550#16874550 for representing hexagons in a grid
 def solve_part_1(tiles):
     return len(get_black_tiles(tiles))
 
